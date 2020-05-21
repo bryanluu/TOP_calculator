@@ -28,3 +28,11 @@ function operate(operator, x, y) {
       return divide(x, y);
   }
 }
+
+display = document.querySelector("#display");
+digits = document.querySelectorAll(".digit");
+digits.forEach(button => {
+  button.addEventListener("click", event => {
+    display.textContent += button.textContent;
+  })
+})

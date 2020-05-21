@@ -29,47 +29,16 @@ function operate(operator, x, y) {
   }
 }
 
-const numbers = document.createAttribute("data-numbers");
-const operators = document.createAttribute("data-operators");
-const display = document.querySelector("#display");
 
-// initialize arrays
-numbers.value = [];
-operators.value = [];
+function clearDisplay() {
+  display.classList.add("clear");
+  display.dataset.numbers = "";
+  display.dataset.operators = "";
+  display.textContent = "0";
+}
 
-// add attributes to the display
-display.setAttributeNode(numbers);
-display.setAttributeNode(operators);
-
-const digits = document.querySelectorAll(".digit");
-
-// add digit to display when clicked
-digits.forEach(button => {
-  button.addEventListener("click", event => {
-    if (display.classList.contains("clear")) {
-      display.textContent = ""; // clear display
-      display.classList.remove("clear");
-    }
-    if(display.textContent.length > 10){
-      return;
-    }
-    display.textContent += button.textContent;
-  })
-})
-
-// save display data with operator when clicked (as CSV list)
-const opButtons = document.querySelectorAll(".operator");
-opButtons.forEach(button => {
-  button.addEventListener("click", event => {
-    display.dataset.numbers += ","+display.textContent; // save number
-    display.dataset.operators += ","+button.textContent; // save operator
-    display.classList.add("clear");
-  })
-})
-
-const equals = document.querySelector("#equals");
-// operate on the saved numbers and the current answer and display it when clicked
-equals.addEventListener("click", event => {
+// operate on the saved numbers and the current answer and display the result
+function computeResult() {
   // convert CSV list to array of numbers
   const numbers = display.dataset.numbers.split(',').splice(1).map(str => Number(str));
   // remove leading comma and convert to array
@@ -101,15 +70,85 @@ equals.addEventListener("click", event => {
   display.dataset.numbers = "";
   display.dataset.operators = "";
   display.textContent = strResult;
+}
+
+// save display with operator (as CSV list)
+function operatorPressed(operator) {
+  display.dataset.numbers += ","+display.textContent; // save number
+  display.dataset.operators += ","+operator; // save operator
+  display.classList.add("clear");
+}
+
+// add digit to display
+function digitPressed(digit) {
+  if (display.classList.contains("clear")) {
+    display.textContent = ""; // clear display
+    display.classList.remove("clear");
+  }
+  if(display.textContent.length > 10){
+    return;
+  }
+  display.textContent += digit;
+}
+
+// run corresponding function when keyboard is pressed
+function keyPressed(event) {
+  const digits = "0123456789";
+  const operators = "+-x*/";
+  if (digits.indexOf(event.key) !== -1) {
+    digitPressed(event.key);
+  } else if (operators.indexOf(event.key) !== -1) {
+    operatorPressed(event.key);
+  } else if (event.key === "=" || event.key === "Enter") {
+    computeResult();
+  } else if (event.key === "c" || event.key === "C") {
+    clearDisplay();
+  }
+}
+
+const numbers = document.createAttribute("data-numbers");
+const operators = document.createAttribute("data-operators");
+const display = document.querySelector("#display");
+
+// initialize arrays
+numbers.value = [];
+operators.value = [];
+
+// add attributes to the display
+display.setAttributeNode(numbers);
+display.setAttributeNode(operators);
+
+const digits = document.querySelectorAll(".digit");
+
+// add event for digit buttons
+digits.forEach(button => {
+  button.addEventListener("click", event => {
+    digitPressed(button.textContent);
+  });
+})
+
+// add click events for operators
+const opButtons = document.querySelectorAll(".operator");
+opButtons.forEach(button => {
+  button.addEventListener("click", event => {
+    operatorPressed(button.textContent);
+  });
+})
+
+const equals = document.querySelector("#equals");
+
+// compute result when clicked
+equals.addEventListener("click", event => {
+  computeResult();
 });
 
 const clear = document.querySelector("#clear");
 // clear display if clicked
 clear.addEventListener("click", event => {
-  display.classList.add("clear");
-  display.dataset.numbers = "";
-  display.dataset.operators = "";
-  display.textContent = "0";
+  clearDisplay();
 });
 
-
+// add event handlers for keyboard presses
+window.addEventListener("keydown", event => {
+  keyPressed(event);
+});

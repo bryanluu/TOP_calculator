@@ -29,8 +29,25 @@ function operate(operator, x, y) {
   }
 }
 
+function getOperatorName(operator) {
+  switch(operator) {
+    case "+":
+      return "add";
+    case "-":
+      return "subtract";
+    case "x":
+    case "*":
+      return "multiply";
+    case "/":
+    case "÷":
+      return "divide";
+  }
+}
+
 
 function clearDisplay() {
+  const clear = document.querySelector("#clear");
+  clear.classList.add("clicked");
   display.classList.add("clear");
   display.dataset.numbers = "";
   display.dataset.operators = "";
@@ -39,6 +56,8 @@ function clearDisplay() {
 
 // operate on the saved numbers and the current answer and display the result
 function computeResult() {
+  const equals = document.querySelector("#equals");
+  equals.classList.add("clicked");
   // convert CSV list to array of numbers
   const numbers = display.dataset.numbers.split(',').splice(1).map(str => Number(str));
   // remove leading comma and convert to array
@@ -74,6 +93,8 @@ function computeResult() {
 
 // save display with operator (as CSV list)
 function operatorPressed(operator) {
+  const button = document.querySelector(`.${getOperatorName(operator)}`);
+  button.classList.add("clicked");
   display.dataset.numbers += ","+display.textContent; // save number
   display.dataset.operators += ","+operator; // save operator
   display.classList.add("clear");
@@ -81,6 +102,8 @@ function operatorPressed(operator) {
 
 // add digit to display
 function digitPressed(digit) {
+  button = document.querySelector(`.number${digit}`);
+  button.classList.add("clicked");
   if (display.classList.contains("clear")) {
     display.textContent = ""; // clear display
     display.classList.remove("clear");
@@ -106,6 +129,14 @@ function keyPressed(event) {
   }
 }
 
+// remove the pressed transition
+function removeTransition(event) {
+  if(event.propertyName !== "transform") {
+    return;
+  }
+  this.classList.remove("clicked");
+}
+
 const numbers = document.createAttribute("data-numbers");
 const operators = document.createAttribute("data-operators");
 const display = document.querySelector("#display");
@@ -120,16 +151,18 @@ display.setAttributeNode(operators);
 
 const digits = document.querySelectorAll(".digit");
 
-// add event for digit buttons
+// add ids and events for digit buttons
 digits.forEach(button => {
+  button.classList.add("number" + button.textContent);
   button.addEventListener("click", event => {
     digitPressed(button.textContent);
   });
 })
 
-// add click events for operators
+// add ids and click events for operators
 const opButtons = document.querySelectorAll(".operator");
 opButtons.forEach(button => {
+  button.classList.add(getOperatorName(button.textContent));
   button.addEventListener("click", event => {
     operatorPressed(button.textContent);
   });
@@ -151,4 +184,10 @@ clear.addEventListener("click", event => {
 // add event handlers for keyboard presses
 window.addEventListener("keydown", event => {
   keyPressed(event);
+});
+
+// add event listener to end transition
+const buttons = document.querySelectorAll("button");
+buttons.forEach(button => {
+  button.addEventListener('transitionend', removeTransition);
 });

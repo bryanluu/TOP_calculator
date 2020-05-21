@@ -50,8 +50,14 @@ button {
   font-size: 16pt;
   border: 3px ridge black;
   border-radius: 5px;
+  transition: all .03s ease;
 }
 
 button:hover {
   box-shadow: 0 0 5px white;
+}
+
+.clicked {
+  transform: scale(0.9);
+  box-shadow: 0 0 5px yellow;
 }

@@ -93,6 +93,10 @@ function computeResult() {
 
 // save display with operator (as CSV list)
 function operatorPressed(operator) {
+  // if remaining minus, do nothing
+  if (display.textContent === '-'){
+    return;
+  }
   const button = document.querySelector(`.${getOperatorName(operator)}`);
   button.classList.add("clicked");
   display.dataset.numbers += ","+display.textContent; // save number
@@ -126,7 +130,56 @@ function keyPressed(event) {
     computeResult();
   } else if (event.key === "c" || event.key === "C") {
     clearDisplay();
+  } else if (event.key === ".") {
+    addDecimal();
+  } else if (event.key === "m" || event.key === "M") {
+    flipSign();
+  } else if (event.key === "Backspace") {
+    deleteLastDigit();
   }
+}
+
+// adds a decimal to display if none present, else do nothing
+function addDecimal() {
+  // if remaining minus, do nothing
+  if (display.textContent === '-'){
+    return;
+  }
+  const decimal = document.querySelector("#decimal");
+  if(display.textContent.indexOf('.') !== -1){
+    return;
+  }
+
+  display.textContent += ".";
+  decimal.classList.add("clicked");
+  display.classList.remove("clear");
+}
+
+// flip the sign of the display
+function flipSign() {
+  // if remaining minus
+  if (display.textContent === '-'){
+    display.textContent = "";
+    return;
+  } else if (display.textContent === "") {
+    display.textContent = "-";
+    return;
+  }
+  const negative = document.querySelector("#negative");
+  let number = Number(display.textContent);
+  number *= -1;
+
+  negative.classList.add("clicked");
+  display.textContent = number.toString();
+}
+
+// delete last digit if display is longer than 1, otherwise set to 0
+function deleteLastDigit() {
+  const del = document.querySelector("#delete");
+  del.classList.add("clicked");
+
+  // remove last digit
+  display.textContent = display.textContent.slice(0, display.textContent.length-1);
 }
 
 // remove the pressed transition
@@ -179,6 +232,24 @@ const clear = document.querySelector("#clear");
 // clear display if clicked
 clear.addEventListener("click", event => {
   clearDisplay();
+});
+
+const decimal = document.querySelector("#decimal");
+// add decimal if clicked
+decimal.addEventListener("click", e => {
+  addDecimal();
+});
+
+const negative = document.querySelector("#negative");
+// reverse sign if clicked
+negative.addEventListener("click", e => {
+  flipSign();
+});
+
+const del = document.querySelector("#delete");
+// delete number if clicked
+del.addEventListener("click", e => {
+  deleteLastDigit();
 });
 
 // add event handlers for keyboard presses

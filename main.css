@@ -48,7 +48,7 @@ button {
   font-family: Helvetica;
   font-weight: bold;
   font-size: 16pt;
-  border: 3px ridge black;
+  border: 3px ridge white;
   border-radius: 5px;
   transition: all .03s ease;
 }
@@ -57,7 +57,23 @@ button:hover {
   box-shadow: 0 0 5px white;
 }
 
+#equals {
+  width: 110px;
+}
+
 .clicked {
   transform: scale(0.9);
   box-shadow: 0 0 5px yellow;
+}
+
+.operation {
+  background-color: #334368;
+  color: white;
+  border: 3px ridge #626d93;
+}
+
+.warn {
+  background-color: #a3275f;
+  color: white;
+  border: 3px ridge pink;
 }

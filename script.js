@@ -50,6 +50,9 @@ digits.forEach(button => {
       display.textContent = ""; // clear display
       display.classList.remove("clear");
     }
+    if(display.textContent.length > 10){
+      return;
+    }
     display.textContent += button.textContent;
   })
 })
@@ -73,26 +76,26 @@ equals.addEventListener("click", event => {
   const operators = display.dataset.operators.split(',').splice(1);
   const currentNumber = Number(display.textContent);
 
+  if(operators.length === 0) {
+    return; // do nothing
+  }
 
-  console.log(numbers);
-  console.log(operators);
   // keep operating until only 1 number is saved
   while(numbers.length > 1){
     let x = numbers.shift();
     let y = numbers[0];
     numbers[0] = operate(operators.shift(), x, y);
   }
-  console.log(numbers);
-  console.log(operators);
 
+  // ensure the display is rounded to 5 decimals
   const result = operate(operators.shift(), numbers.shift(), currentNumber);
   let strResult = result.toString();
-  if (strResult.length > 5) {
+  if (result === Infinity) {
+    strResult = "Divided by 0!";
+  } else if (strResult.length > 5) {
     // round to 5 decimal places
     strResult = (Math.round(result*100000)/100000).toString();
   }
-  console.log(numbers);
-  console.log(operators);
 
   display.classList.add("clear");
   display.dataset.numbers = "";
